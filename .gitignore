@@ -1,0 +1,27 @@
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Data (raw PDFs are large, don't commit them)
+data/raw/
+data/embeddings/
+
+# Models (never commit model weights)
+*.bin
+*.safetensors
+finetuning/models/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
