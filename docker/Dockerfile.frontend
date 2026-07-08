@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY frontend/package*.json ./
 # Clean install including peer dependencies
-RUN npm ci
+RUN npm install
 
 # Copy frontend source
 COPY frontend/ .

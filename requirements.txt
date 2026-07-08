@@ -14,8 +14,6 @@ greenlet==3.2.3
 # ── Vector Database (Qdrant) ────────────────────────────────
 qdrant-client==1.14.2
 
-# ── Embeddings ──────────────────────────────────────────────
-sentence-transformers==4.1.0
 
 # ── LLM Providers (install only what you need) ──────────────
 google-generativeai==0.8.5

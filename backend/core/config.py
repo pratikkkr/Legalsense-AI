@@ -54,7 +54,7 @@ class Settings(BaseSettings):
 
     # ── Embeddings ──────────────────────────────────────────
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
-    EMBEDDING_DIMENSION: int = 384
+    EMBEDDING_DIMENSION: int = 768
 
     # ── LLM (provider-agnostic) ─────────────────────────────
     LLM_PROVIDER: Literal[
