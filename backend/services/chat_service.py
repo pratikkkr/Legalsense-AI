@@ -165,7 +165,8 @@ class ChatService:
             try:
                 title = await self.rag.generate_title(message)
                 conv.title = title
-            except Exception:
+            except Exception as exc:
+                log.warning("title_generation_failed", error=str(exc))
                 conv.title = message[:60]
 
         await self.db.flush()

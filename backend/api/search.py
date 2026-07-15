@@ -4,7 +4,7 @@ Search API — semantic search across legal sections.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.api.deps import get_current_user, get_db
@@ -30,7 +30,7 @@ async def search(
 
 @router.get("/history", response_model=list[SearchHistoryItem])
 async def search_history(
-    limit: int = 20,
+    limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

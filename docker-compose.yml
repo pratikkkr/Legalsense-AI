@@ -5,7 +5,7 @@ services:
     container_name: legalsense_db
     environment:
       POSTGRES_USER: legalsense
-      POSTGRES_PASSWORD: legalsense_db_password_1234
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
       POSTGRES_DB: legalsense
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -40,12 +40,12 @@ services:
     container_name: legalsense_backend
     environment:
       - ENVIRONMENT=production
-      - DATABASE_URL=postgresql+asyncpg://legalsense:legalsense_db_password_1234@db:5432/legalsense
+      - DATABASE_URL=postgresql+asyncpg://legalsense:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@db:5432/legalsense
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
       - LLM_PROVIDER=gemini
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-legalsense_super_secret_signing_key_999}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:?GEMINI_API_KEY must be set in .env}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set in .env}
       - LOG_LEVEL=INFO
     ports:
       - "8000:8000"

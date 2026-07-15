@@ -147,6 +147,9 @@ class GeminiProvider(LLMProvider):
             temperature=self.temperature,
             max_output_tokens=self.max_tokens,
         )
+        response = await asyncio.to_thread(
+            lambda: model.generate_content(history, generation_config=config)
+        )
         try:
             content = response.text
         except ValueError:
