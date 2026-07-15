@@ -94,6 +94,8 @@ def chunk_section(
 ) -> list[dict[str, Any]]:
     cs = chunk_size or _settings.RAG_CHUNK_SIZE
     co = chunk_overlap or _settings.RAG_CHUNK_OVERLAP
+    if co >= cs:
+        raise ValueError(f"chunk_overlap ({co}) must be smaller than chunk_size ({cs})")
     text: str = section["text"]
     act_slug = _slug(section.get("source", "unknown"))
     base_meta = {
