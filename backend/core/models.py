@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import enum
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     DateTime,
     Enum,
@@ -21,19 +22,18 @@ from sqlalchemy import (
     String,
     Text,
     func,
-    JSON,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from backend.core.database import Base
+
 # Cross-dialect JSON type: uses JSONB on Postgres, JSON on SQLite
 JSON_TYPE = JSON().with_variant(JSONB, "postgresql")
 
-from backend.core.database import Base
-
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _new_uuid() -> uuid.UUID:

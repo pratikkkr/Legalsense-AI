@@ -4,6 +4,7 @@ uvicorn[standard]==0.34.2
 pydantic==2.11.3
 pydantic-settings==2.9.1
 python-multipart==0.0.20
+email-validator==2.2.0
 
 # ── Database (PostgreSQL + Async SQLAlchemy) ────────────────
 sqlalchemy[asyncio]==2.0.41
@@ -36,8 +37,3 @@ httpx==0.28.1
 
 # ── PDF Parsing ─────────────────────────────────────────────
 PyMuPDF==1.27.2.3
-
-# ── Testing ─────────────────────────────────────────────────
-pytest==8.4.1
-pytest-asyncio==1.0.0
-pytest-cov==6.2.1

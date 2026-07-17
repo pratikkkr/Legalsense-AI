@@ -7,12 +7,18 @@ from __future__ import annotations
 import time
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.chains.retriever import HybridRetriever
 from backend.core.logging_config import get_logger
 from backend.core.models import SearchHistory
-from backend.schemas.search import SearchRequest, SearchResponse, SearchResultItem
+from backend.schemas.search import (
+    SearchHistoryItem,
+    SearchRequest,
+    SearchResponse,
+    SearchResultItem,
+)
 
 log = get_logger(__name__)
 
@@ -75,3 +81,15 @@ class SearchService:
             total=len(items),
             elapsed_ms=round(elapsed, 1),
         )
+
+    async def get_history(
+        self, user_id: uuid.UUID, limit: int
+    ) -> list[SearchHistoryItem]:
+        """Return a user's most recent search-history entries."""
+        result = await self.db.execute(
+            select(SearchHistory)
+            .where(SearchHistory.user_id == user_id)
+            .order_by(SearchHistory.created_at.desc())
+            .limit(limit)
+        )
+        return list(result.scalars().all())

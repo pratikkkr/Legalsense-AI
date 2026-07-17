@@ -4,11 +4,9 @@ Chat API — conversational AI with streaming support.
 
 from __future__ import annotations
 
-import json
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.api.deps import get_current_user, get_db
@@ -44,7 +42,7 @@ async def chat(
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        )
+        ) from exc
     return result
 
 

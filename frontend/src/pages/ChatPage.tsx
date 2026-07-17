@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { chatApi, actsApi } from '../api/client';
+import Modal from '../components/Modal';
 import type { ConversationSummary, Message, Citation, SectionDetail } from '../types';
 import './ChatPage.css';
 
@@ -15,6 +16,8 @@ export default function ChatPage() {
   const [citationModal, setCitationModal] = useState<Citation | null>(null);
   const [citationDetail, setCitationDetail] = useState<SectionDetail | null>(null);
   const [citationLoading, setCitationLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load conversations list
@@ -53,6 +56,7 @@ export default function ChatPage() {
       setConversations(data);
     } catch (err) {
       console.error(err);
+      setError('Failed to load your conversation list.');
     }
   };
 
@@ -62,6 +66,7 @@ export default function ChatPage() {
       setMessages(data.messages);
     } catch (err) {
       console.error(err);
+      setError('Failed to load this conversation.');
     }
   };
 
@@ -140,13 +145,27 @@ export default function ChatPage() {
       await loadConversations();
     } catch (err) {
       console.error(err);
+      setError('Failed to delete the conversation.');
     }
   };
 
   return (
     <div className="chat-page fade-in">
+      <button
+        type="button"
+        className="btn btn-ghost chat-sidebar-toggle"
+        onClick={() => setSidebarOpen(open => !open)}
+        aria-label="Toggle conversation list"
+      >
+        ☰
+      </button>
+
+      {sidebarOpen && (
+        <div className="chat-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* Left Sidebar: Conversations */}
-      <aside className="chat-sidebar">
+      <aside className={`chat-sidebar ${sidebarOpen ? 'chat-sidebar-open' : ''}`}>
         <div className="chat-sidebar-header">
           <button className="btn btn-primary new-chat-btn" onClick={startNewConversation}>
             ➕ New Consultation
@@ -157,7 +176,10 @@ export default function ChatPage() {
             <div
               key={conv.id}
               className={`conv-item ${currentId === conv.id ? 'conv-item-active' : ''}`}
-              onClick={() => setSearchParams({ id: conv.id })}
+              onClick={() => {
+                setSearchParams({ id: conv.id });
+                setSidebarOpen(false);
+              }}
             >
               <div className="conv-title-row">
                 <span className="conv-title">💬 {conv.title}</span>
@@ -165,6 +187,7 @@ export default function ChatPage() {
                   className="btn-delete"
                   onClick={e => handleDeleteConversation(conv.id, e)}
                   title="Delete conversation"
+                  aria-label="Delete conversation"
                 >
                   ✕
                 </button>
@@ -179,6 +202,19 @@ export default function ChatPage() {
 
       {/* Main Chat Panel */}
       <section className="chat-main">
+        {error && (
+          <div className="alert alert-error chat-error-banner">
+            {error}
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => setError(null)}
+              aria-label="Dismiss error"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {messages.length === 0 && !loading ? (
           <div className="chat-welcome container">
             <span className="welcome-logo">⚖️</span>
@@ -265,42 +301,31 @@ export default function ChatPage() {
 
       {/* Citation Modal / Side Drawer */}
       {citationModal && (
-        <div className="modal-overlay" onClick={() => setCitationModal(null)}>
-          <div className="modal-content card glass fade-in" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Statutory Text</h3>
-              <button className="btn btn-ghost modal-close" onClick={() => setCitationModal(null)}>
-                ✕
-              </button>
+        <Modal title="Statutory Text" onClose={() => setCitationModal(null)}>
+          {citationLoading ? (
+            <div className="modal-spinner">
+              <div className="spinner" />
+              <p>Fetching full section text...</p>
             </div>
-            <hr />
-            <div className="modal-body">
-              {citationLoading ? (
-                <div className="modal-spinner">
-                  <div className="spinner" />
-                  <p>Fetching full section text...</p>
-                </div>
-              ) : citationDetail ? (
-                <div>
-                  <h4 className="modal-section-title">
-                    {citationDetail.act.title}
-                  </h4>
-                  <h5 className="modal-section-header">
-                    Section {citationDetail.section_number}: {citationDetail.title}
-                  </h5>
-                  {citationDetail.chapter && (
-                    <span className="modal-chapter">{citationDetail.chapter}</span>
-                  )}
-                  <p className="modal-text">{citationDetail.text}</p>
-                </div>
-              ) : (
-                <p className="modal-error">
-                  Could not load full text for Section {citationModal.section_number} of {citationModal.act_title}.
-                </p>
+          ) : citationDetail ? (
+            <div>
+              <h4 className="modal-section-title">
+                {citationDetail.act.title}
+              </h4>
+              <h5 className="modal-section-header">
+                Section {citationDetail.section_number}: {citationDetail.title}
+              </h5>
+              {citationDetail.chapter && (
+                <span className="modal-chapter">{citationDetail.chapter}</span>
               )}
+              <p className="modal-text">{citationDetail.text}</p>
             </div>
-          </div>
-        </div>
+          ) : (
+            <p className="modal-error">
+              Could not load full text for Section {citationModal.section_number} of {citationModal.act_title}.
+            </p>
+          )}
+        </Modal>
       )}
     </div>
   );

@@ -9,8 +9,7 @@ extraction.
 from __future__ import annotations
 
 import re
-from dataclasses import asdict
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from backend.chains.llm import LLMMessage, LLMResponse, create_llm_provider
 from backend.chains.prompts import (

@@ -1,0 +1,34 @@
+# Render Blueprint for the LegalSense AI backend.
+# Deploy: connect this repo in the Render dashboard -> "New +" -> "Blueprint".
+# Render reads this file and provisions the service below. Secrets marked
+# `sync: false` must be filled in manually in the Render dashboard after
+# the first deploy — see README.md's "Deploy for Free" section.
+services:
+  - type: web
+    name: legalsense-backend
+    runtime: docker
+    dockerfilePath: docker/Dockerfile.backend
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: DATABASE_URL
+        sync: false # postgresql+asyncpg://... from your Neon (or other) Postgres project
+      - key: QDRANT_HOST
+        sync: false # e.g. xxxxxxxx-xxxx.aws.cloud.qdrant.io
+      - key: QDRANT_PORT
+        value: "6333"
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false # generate with: openssl rand -hex 32
+      - key: ALLOWED_ORIGINS
+        sync: false # JSON array, e.g. ["https://your-app.vercel.app"]

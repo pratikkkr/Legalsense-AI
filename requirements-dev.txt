@@ -1,0 +1,13 @@
+# Development/CI dependencies — installs runtime requirements plus
+# testing and linting tooling. Not installed in the production image
+# (see docker/Dockerfile.backend, which installs requirements.txt only).
+-r requirements.txt
+
+# ── Testing ─────────────────────────────────────────────────
+pytest==8.4.1
+pytest-asyncio==1.0.0
+pytest-cov==6.2.1
+aiosqlite==0.21.0
+
+# ── Linting / Formatting ────────────────────────────────────
+ruff==0.8.6

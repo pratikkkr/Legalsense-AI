@@ -1,6 +1,5 @@
-import re
-from backend.core.config import get_settings
-from scripts.ingest.parse_act import clean_text, split_into_sections, OMITTED_SECTION_RE
+from scripts.ingest.parse_act import OMITTED_SECTION_RE, clean_text, split_into_sections
+
 
 def test_clean_text():
     # Glued footnote section header fix
@@ -10,11 +9,17 @@ def test_clean_text():
 
 def test_omitted_section_regex():
     # Standard bracketed omitted section title
-    txt1 = "\n49. [Composition of Cyber Appellate Tribunal.]—Omitted by the Finance Act, 2017\n\n50. Next section"
+    txt1 = (
+        "\n49. [Composition of Cyber Appellate Tribunal.]—Omitted by the "
+        "Finance Act, 2017\n\n50. Next section"
+    )
     assert OMITTED_SECTION_RE.search(txt1) is not None
-    
+
     # Footnote-glued bracketed omitted section title (the s.130A bug we fixed)
-    txt2 = "\n7[130A. Transfer of policy of marine insurance.] Rep. by the Marine Insurance Act, 1963\n\n131. Next section"
+    txt2 = (
+        "\n7[130A. Transfer of policy of marine insurance.] Rep. by the "
+        "Marine Insurance Act, 1963\n\n131. Next section"
+    )
     assert OMITTED_SECTION_RE.search(txt2) is not None
 
 def test_split_into_sections():

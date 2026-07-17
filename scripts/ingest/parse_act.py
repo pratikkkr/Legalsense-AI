@@ -10,13 +10,12 @@ Output:
     data/processed/<act_slug>.json
 """
 
-import sys
-import re
 import json
+import re
+import sys
 from pathlib import Path
 
 import fitz  # pymupdf
-
 
 # ---------- Step 1: extract raw text ----------
 
@@ -164,7 +163,8 @@ SCHEDULE_TAIL_RE = re.compile(
 # suppressed.  We look for any 'THE [ORDINAL] SCHEDULE' or bare 'THE SCHEDULE'
 # heading line.
 SCHEDULE_START_RE = re.compile(
-    r"\n[ \t]*\d*\[?[ \t]*THE\s+(?:(?:FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH|SEVENTH|EIGHTH|NINTH)\s+)?SCHEDULE\b",
+    r"\n[ \t]*\d*\[?[ \t]*THE\s+(?:(?:FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH"
+    r"|SEVENTH|EIGHTH|NINTH)\s+)?SCHEDULE\b",
 )
 
 

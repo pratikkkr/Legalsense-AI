@@ -27,12 +27,12 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_ROOT))
 
-from backend.core.config import get_settings
-from backend.core.database import async_session_factory, engine, Base
-from backend.core.models import ActMetadata, Section
-from backend.chains.embedding import ingest_sections
+from sqlalchemy import select  # noqa: E402 — must follow the sys.path fix-up above
 
-from sqlalchemy import select
+from backend.chains.embedding import ingest_sections  # noqa: E402
+from backend.core.config import get_settings  # noqa: E402
+from backend.core.database import Base, async_session_factory, engine  # noqa: E402
+from backend.core.models import ActMetadata, Section  # noqa: E402
 
 settings = get_settings()
 
@@ -62,7 +62,7 @@ async def seed_database():
 
     async with async_session_factory() as session:
         for jf in json_files:
-            with open(jf, "r", encoding="utf-8") as f:
+            with open(jf, encoding="utf-8") as f:
                 sections_data = json.load(f)
 
             if not sections_data:
@@ -115,7 +115,7 @@ def seed_vectors():
     all_sections: list[dict] = []
 
     for jf in json_files:
-        with open(jf, "r", encoding="utf-8") as f:
+        with open(jf, encoding="utf-8") as f:
             data = json.load(f)
             all_sections.extend(data)
 

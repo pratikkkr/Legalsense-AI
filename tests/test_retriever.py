@@ -1,7 +1,8 @@
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from backend.chains.embedding import chunk_section
 from backend.chains.retriever import HybridRetriever
+
 
 def test_chunk_section():
     # Long section text split test

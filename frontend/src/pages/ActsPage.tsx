@@ -14,6 +14,7 @@ export default function ActsPage() {
   const [loadingActs, setLoadingActs] = useState(true);
   const [loadingSections, setLoadingSections] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [error, setError] = useState('');
 
   // Load all acts on mount
   useEffect(() => {
@@ -25,7 +26,10 @@ export default function ActsPage() {
           setSelectedActSlug(data[0].slug);
         }
       })
-      .catch(err => console.error(err))
+      .catch(err => {
+        console.error(err);
+        setError('Failed to load the list of Acts.');
+      })
       .finally(() => setLoadingActs(false));
   }, []);
 
@@ -54,10 +58,11 @@ export default function ActsPage() {
 
   const loadSections = async (slug: string) => {
     setLoadingSections(true);
+    setError('');
     try {
       const data = await actsApi.get(slug);
       setSections(data.sections);
-      
+
       // Auto-select first section if no section parameter exists in URL
       const currentSec = searchParams.get('sec');
       if (data.sections.length > 0 && !currentSec) {
@@ -65,6 +70,7 @@ export default function ActsPage() {
       }
     } catch (err) {
       console.error(err);
+      setError('Failed to load provisions for this Act.');
     } finally {
       setLoadingSections(false);
     }
@@ -72,11 +78,13 @@ export default function ActsPage() {
 
   const loadSectionDetail = async (actSlug: string, secNum: string) => {
     setLoadingDetail(true);
+    setError('');
     try {
       const detail = await actsApi.getSection(actSlug, secNum);
       setSectionDetail(detail);
     } catch (err) {
       console.error(err);
+      setError('Failed to load the full text of this section.');
     } finally {
       setLoadingDetail(false);
     }
@@ -140,6 +148,19 @@ export default function ActsPage() {
 
       {/* 3rd column: Section Reader Panel */}
       <section className="acts-reader">
+        {error && (
+          <div className="alert alert-error acts-error-banner">
+            {error}
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => setError('')}
+              aria-label="Dismiss error"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {loadingDetail ? (
           <div className="reader-loader"><div className="spinner" /><p>Fetching statutory text...</p></div>
         ) : sectionDetail ? (
