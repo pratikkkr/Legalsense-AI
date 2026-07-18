@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
+
 @pytest.mark.asyncio
 async def test_auth_flow(client: AsyncClient):
     # 1. Register a new user

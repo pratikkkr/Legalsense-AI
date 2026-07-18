@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from backend.chains.llm import LLMMessage
-from backend.chains.rag import RAGChain, extract_citations
+from backend.chains.rag import RAGChain
 from backend.core.logging_config import get_logger
 from backend.core.models import Conversation, Message, MessageRole
 from backend.schemas.chat import ConversationDetail, ConversationSummary, MessageResponse

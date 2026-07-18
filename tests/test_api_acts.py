@@ -1,7 +1,9 @@
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from backend.core.models import ActMetadata, Section
+
 
 @pytest.fixture
 def sample_act_data():
@@ -52,7 +54,8 @@ async def test_acts_endpoints(
     assert len(get_res.json()["sections"]) == 1
 
     # 3. List sections
-    sec_res = await client.get(f"/api/v1/acts/{sample_act_data['slug']}/sections", headers=auth_headers)
+    slug = sample_act_data["slug"]
+    sec_res = await client.get(f"/api/v1/acts/{slug}/sections", headers=auth_headers)
     assert sec_res.status_code == 200
     assert len(sec_res.json()) == 1
     assert sec_res.json()[0]["section_number"] == "12"

@@ -30,13 +30,14 @@ _qdrant_client: QdrantClient | None = None
 
 
 def get_qdrant_client() -> QdrantClient:
+    """Return the process-wide Qdrant client singleton, creating it on first use."""
     global _qdrant_client
     if _qdrant_client is None:
         _qdrant_client = QdrantClient(
             host=_settings.QDRANT_HOST,
             port=_settings.QDRANT_PORT,
             api_key=_settings.QDRANT_API_KEY,
-            timeout=30,
+            timeout=_settings.QDRANT_TIMEOUT_SECONDS,
         )
     return _qdrant_client
 
@@ -44,6 +45,7 @@ def get_qdrant_client() -> QdrantClient:
 # ── Gemini setup ────────────────────────────────────────────────────
 
 def _get_genai():
+    """Configure and return the google.generativeai module with the API key set."""
     genai.configure(api_key=_settings.GEMINI_API_KEY)
     return genai
 
@@ -51,6 +53,7 @@ def _get_genai():
 # ── Collection management ──────────────────────────────────────────
 
 def ensure_collection() -> None:
+    """Create the configured Qdrant collection (with payload indexes) if missing."""
     client = get_qdrant_client()
     collections = [c.name for c in client.get_collections().collections]
     name = _settings.QDRANT_COLLECTION
@@ -60,7 +63,7 @@ def ensure_collection() -> None:
         client.create_collection(
             collection_name=name,
             vectors_config=models.VectorParams(
-                size=768,  # Gemini text-embedding-004 dimension
+                size=_settings.EMBEDDING_DIMENSION,  # Gemini text-embedding-004 dimension
                 distance=models.Distance.COSINE,
             ),
         )
@@ -84,6 +87,7 @@ def ensure_collection() -> None:
 # ── Chunking ────────────────────────────────────────────────────────
 
 def _slug(text: str) -> str:
+    """Convert an arbitrary string (e.g. an Act title) into a URL-safe slug."""
     return re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
 
 
@@ -92,6 +96,7 @@ def chunk_section(
     chunk_size: int | None = None,
     chunk_overlap: int | None = None,
 ) -> list[dict[str, Any]]:
+    """Split a section's text into overlapping word-count chunks with shared metadata."""
     cs = chunk_size or _settings.RAG_CHUNK_SIZE
     co = chunk_overlap or _settings.RAG_CHUNK_OVERLAP
     if co >= cs:
@@ -132,8 +137,7 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
     """Embed a batch of texts using Gemini text-embedding-004."""
     g = _get_genai()
     vectors = []
-    # Gemini embedding API supports batch of up to 100
-    batch_size = 100
+    batch_size = _settings.EMBEDDING_BATCH_SIZE
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
         result = g.embed_content(
@@ -159,6 +163,7 @@ def embed_query(query: str) -> list[float]:
 # ── Ingestion ───────────────────────────────────────────────────────
 
 def ingest_sections(sections: list[dict[str, Any]]) -> int:
+    """Chunk, embed, and upsert a list of Act sections into Qdrant. Returns point count."""
     ensure_collection()
     client = get_qdrant_client()
 
@@ -171,7 +176,7 @@ def ingest_sections(sections: list[dict[str, Any]]) -> int:
     vectors = _embed_texts(texts)
 
     points: list[models.PointStruct] = []
-    for chunk, vec in zip(all_chunks, vectors):
+    for chunk, vec in zip(all_chunks, vectors, strict=False):
         uid = uuid.UUID(
             hashlib.md5(
                 f"{chunk['act_slug']}:{chunk['section_number']}:{chunk['chunk_index']}".encode()
@@ -185,7 +190,7 @@ def ingest_sections(sections: list[dict[str, Any]]) -> int:
             )
         )
 
-    batch_size = 100
+    batch_size = _settings.EMBEDDING_BATCH_SIZE
     for i in range(0, len(points), batch_size):
         client.upsert(
             collection_name=_settings.QDRANT_COLLECTION,

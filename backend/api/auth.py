@@ -33,7 +33,9 @@ async def register(body: UserRegister, db: AsyncSession = Depends(get_db)):
     try:
         user = await svc.register(body)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=str(exc)
+        ) from exc
     return user
 
 
@@ -46,7 +48,7 @@ async def login(body: UserLogin, db: AsyncSession = Depends(get_db)):
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
-        )
+        ) from exc
     return tokens
 
 
@@ -59,7 +61,7 @@ async def refresh(body: RefreshRequest, db: AsyncSession = Depends(get_db)):
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
-        )
+        ) from exc
     return tokens
 
 

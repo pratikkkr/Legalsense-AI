@@ -51,10 +51,12 @@ class Settings(BaseSettings):
     QDRANT_PORT: int = 6333
     QDRANT_COLLECTION: str = "legal_sections"
     QDRANT_API_KEY: str | None = None
+    QDRANT_TIMEOUT_SECONDS: int = 30
 
     # ── Embeddings ──────────────────────────────────────────
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
     EMBEDDING_DIMENSION: int = 768
+    EMBEDDING_BATCH_SIZE: int = 100
 
     # ── LLM (provider-agnostic) ─────────────────────────────
     LLM_PROVIDER: Literal[

@@ -72,7 +72,11 @@ export default function SearchPage() {
       <form onSubmit={handleSubmit} className="search-form card glass">
         <div className="search-inputs">
           <div className="input-group flex-grow">
+            <label htmlFor="search-input" className="sr-only">
+              Search legal concepts
+            </label>
             <input
+              id="search-input"
               type="text"
               className="input search-input"
               placeholder="Search legal concepts, e.g., 'breach of contract damages' or 'cyber security regulations'"

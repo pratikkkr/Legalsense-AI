@@ -191,7 +191,22 @@
   padding: var(--space-8);
 }
 
+.acts-error-banner {
+  justify-content: space-between;
+  margin: var(--space-4) var(--space-4) 0;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .acts-column {
+    width: 220px;
+  }
+
+  .sections-sidebar {
+    width: 220px;
+  }
+}
 
 @media (max-width: 992px) {
   .acts-column {

@@ -21,6 +21,7 @@
   --color-accent: #7c5cfc;
   --color-accent-light: #9b7eff;
   --color-accent-dark: #5a3fd4;
+  --color-accent-secondary: #5a2d82;
   --color-accent-muted: rgba(124, 92, 252, 0.15);
 
   --color-text-primary: #eaeaf5;
@@ -166,6 +167,18 @@ input, textarea, select, button {
   max-width: var(--max-content-width);
   margin: 0 auto;
   padding: 0 var(--space-6);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .glass {
@@ -357,6 +370,51 @@ input, textarea, select, button {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Modal ──────────────────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.modal-header h3 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.modal-close {
+  padding: var(--space-1);
+}
+
+.modal-body {
+  margin-top: var(--space-4);
+  overflow-y: auto;
 }
 
 /* ── Toast / Alert ──────────────────────────────────────────── */

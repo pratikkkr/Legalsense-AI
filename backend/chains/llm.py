@@ -19,8 +19,8 @@ from __future__ import annotations
 
 import asyncio
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import AsyncIterator
 
 from backend.core.config import get_settings
 from backend.core.logging_config import get_logger
@@ -395,7 +395,6 @@ class AnthropicProvider(LLMProvider):
     async def generate_with_tools(
         self, messages: list[LLMMessage], tools: list[ToolDefinition], **kwargs
     ) -> LLMToolResponse:
-        import json
 
         system, msgs = self._split_system(messages)
         anthropic_tools = [

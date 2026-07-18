@@ -11,8 +11,6 @@ from backend.api.deps import get_current_user, get_db
 from backend.core.models import User
 from backend.schemas.search import SearchHistoryItem, SearchRequest, SearchResponse
 from backend.services.search_service import SearchService
-from backend.core.models import SearchHistory
-from sqlalchemy import select
 
 router = APIRouter(prefix="/api/v1/search", tags=["Search"])
 
@@ -35,10 +33,5 @@ async def search_history(
     current_user: User = Depends(get_current_user),
 ):
     """Return the authenticated user's recent search history."""
-    result = await db.execute(
-        select(SearchHistory)
-        .where(SearchHistory.user_id == current_user.id)
-        .order_by(SearchHistory.created_at.desc())
-        .limit(limit)
-    )
-    return list(result.scalars().all())
+    svc = SearchService(db)
+    return await svc.get_history(current_user.id, limit)

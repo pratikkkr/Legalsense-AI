@@ -279,50 +279,7 @@
   40% { transform: scale(1); opacity: 1; }
 }
 
-/* ── Modal Overlay & Dialog ─────────────────────────────────── */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-}
-
-.modal-content {
-  width: 100%;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-3);
-}
-
-.modal-header h3 {
-  font-size: var(--text-lg);
-  font-weight: 600;
-}
-
-.modal-close {
-  padding: var(--space-1);
-}
-
-.modal-body {
-  margin-top: var(--space-4);
-  overflow-y: auto;
-}
+/* ── Citation modal content (Modal shell styles live in index.css) ── */
 
 .modal-section-title {
   font-size: var(--text-xs);
@@ -369,10 +326,57 @@
   color: var(--color-error);
 }
 
+/* ── Error banner ───────────────────────────────────────────── */
+
+.chat-error-banner {
+  justify-content: space-between;
+  margin: var(--space-4) var(--space-6) 0;
+}
+
+/* ── Mobile sidebar toggle ──────────────────────────────────── */
+
+.chat-sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 210;
+}
+
+.chat-sidebar-overlay {
+  display: none;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  .chat-sidebar-toggle {
+    display: inline-flex;
+  }
+
   .chat-sidebar {
-    display: none; /* In production mobile, could show floating panel or fold out */
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 205;
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+
+  .chat-sidebar-open {
+    transform: translateX(0);
+  }
+
+  .chat-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 195;
+  }
+
+  .chat-main {
+    padding-top: var(--header-height);
   }
 }

@@ -1,7 +1,10 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from httpx import AsyncClient
+
 from backend.chains.retriever import RetrievedChunk
+
 
 @pytest.mark.asyncio
 async def test_search_endpoint(client: AsyncClient, auth_headers: dict[str, str]):
@@ -40,3 +43,34 @@ async def test_search_endpoint(client: AsyncClient, auth_headers: dict[str, str]
         assert hist_res.status_code == 200
         assert len(hist_res.json()) >= 1
         assert hist_res.json()[0]["query"] == search_req["query"]
+
+
+@pytest.mark.asyncio
+async def test_search_history_respects_limit_bounds(
+    client: AsyncClient, auth_headers: dict[str, str]
+):
+    """
+    Locks in the router -> SearchService.get_history() refactor: the
+    endpoint must still delegate correctly and enforce limit bounds
+    (1-100) rather than accepting an unbounded value.
+    """
+    within_bounds = await client.get(
+        "/api/v1/search/history", params={"limit": 5}, headers=auth_headers
+    )
+    assert within_bounds.status_code == 200
+
+    too_large = await client.get(
+        "/api/v1/search/history", params={"limit": 999999999}, headers=auth_headers
+    )
+    assert too_large.status_code == 422
+
+    too_small = await client.get(
+        "/api/v1/search/history", params={"limit": 0}, headers=auth_headers
+    )
+    assert too_small.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_search_history_requires_auth(client: AsyncClient):
+    res = await client.get("/api/v1/search/history")
+    assert res.status_code == 401
