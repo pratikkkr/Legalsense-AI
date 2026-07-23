@@ -1,6 +1,9 @@
-# LegalSense AI — Production AI Legal Assistant
+# LegalSense AI
 
-LegalSense AI is a production-grade AI-powered legal assistant designed to query, search, and analyze Indian Central Acts. Built using a robust Retrieval-Augmented Generation (RAG) architecture, it offers semantic search, automated citations, and multi-turn chat capabilities over statutory texts.
+An AI assistant for querying and searching Indian Central Acts. It's built
+on a RAG pipeline — the answers are grounded in the actual statutory text
+instead of whatever the model remembers, and every claim gets cited back to
+a specific Act and Section.
 
 ---
 
@@ -26,7 +29,7 @@ LegalSense AI is a production-grade AI-powered legal assistant designed to query
 
 ---
 
-## Onboarding & Setup
+## Setup
 
 ### Prerequisites
 
@@ -156,7 +159,7 @@ python scripts/seed_db.py
 This script will:
 - Initialize the SQLAlchemy Postgres tables.
 - Ingest and chunk all processed Acts in `data/processed/`.
-- Generate vector embeddings for the chunks using the local embedding model.
+- Generate vector embeddings for the chunks via the Gemini embeddings API.
 - Upsert points into the Qdrant database.
 
 ---
@@ -186,3 +189,12 @@ ruff check .
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs all of the
 above, plus the frontend's `npm run lint` and `npm run build`, on every push
 and pull request.
+
+---
+
+## More docs
+
+There's a Swagger UI at `/docs` on any running backend instance if you want
+to poke at the API directly. For deeper notes on the architecture, the RAG
+pipeline, config, and deployment, check the `ai-context/` folder — that's
+where the longer writeups live so this file doesn't turn into a wall of text.
